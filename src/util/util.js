@@ -125,7 +125,7 @@ const TRIGGERMETHODSL = {
 
 
 const fixStringToDescriptive = (fixstring) => {
-    if (!fixString) return '';
+    if (!fixstring) return '';
     let arr = fixstring.split('\x01');
     let output = '';
     arr.forEach((pair) => {

@@ -67,7 +67,7 @@ class FIXParserClientBase extends EventEmitter {
             process.stdout.write(`[${now()}] **********Hearbeat************`);
         } else if (message.description === 'Logout') {
             console.log(`[${now()}] Received message: ${message.description} ===========================================`);
-            // console.log(fixStringToDescriptive(message.string));
+            console.log(fixStringToDescriptive(message.string));
             console.log(message.string);
         } else if (message.description === 'Reject') {
             console.log(`[${now()}] Received message: ${message.description} ===========================================`);
