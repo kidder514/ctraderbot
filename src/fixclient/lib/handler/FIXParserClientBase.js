@@ -144,9 +144,9 @@ class FIXParserClientBase extends EventEmitter {
                 if (reportObj.OrdType === 'STOP' && reportObj.OrdStatus === 'Filled' && reportObj.ExecType === 'Trade') {
                     // SL Hit !!!!!
                     console.log(`[${now()}] SL: HIT!!!!! ===========================================`);
+                    lastOrderVolume = currentOrder.volumne;
                     currentOrder = initialCurrentOrder;
                     lastOrderWin = false;
-                    lastOrderVolume = currentOrder.volumne;
                 }
                 if (reportObj.OrdType === 'STOP' && reportObj.OrdStatus === 'Canceled (when the order is partially filled' && reportObj.ExecType === 'Canceled') {
                     // order cancelled by machine
