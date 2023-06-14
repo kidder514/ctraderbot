@@ -17,7 +17,7 @@ const initialCurrentOrder = {
 };
 
 global.stopLoss = 0.3; // this is for JPYUSD only, and is what I am currently working on
-global.baseVolumne = 5000;
+global.baseVolumne = 2000;
 
 global.lastOrderWin = true; // default to true so it starts with base volumne
 global.lastOrderVolume = baseVolumne;
