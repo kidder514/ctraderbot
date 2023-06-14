@@ -144,5 +144,6 @@ app.listen(appPort, () => {
 })
 
 // version 1.1
-// health check there must be 2 order running at any given time, otherwise alert
 // logging cloudwatch to mobile phone
+// add close all options
+// add time range to trade. like from 3am-15am dont trade, and of it is in this range ,close all order, maybe only trade london and newyork time
