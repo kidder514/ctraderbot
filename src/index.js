@@ -17,7 +17,8 @@ const initialCurrentOrder = {
 };
 
 global.stopLoss = 0.003; // this is for GBP only, and is what I am currently working on
-global.baseVolumne = 2000;
+global.baseVolumne = 1000;
+global.maxVolumne = baseVolumne * 15;
 
 global.lastOrderWin = true; // default to true so it starts with base volumne
 global.lastOrderVolume = baseVolumne;
@@ -105,13 +106,15 @@ app.post('/trade', (req, res) => {
     var orderTimer = setInterval(() => {
         console.log(`[${now()}] Order: Waiting to create =======================`);
         if (currentOrder.orderStatus === 'NONE') {
+            let orderVolume = lastOrderWin ? baseVolumne : lastOrderVolume * 2;
+            if (orderVolume > maxVolumne) { orderVolume = maxVolumne; }
             client.sendNewOrder({
                 label: 'Order',
                 securityObj: {
                     symbol: PAIR_TO_SYMBOL_MAP[pair.toUpperCase()],
                     fixSymbolID: PAIR_TO_SYMBOL_MAP[pair.toUpperCase()],
                 },
-                orderQty: lastOrderWin ? baseVolumne : lastOrderVolume * 2,
+                orderQty: orderVolume,
                 direction: direction.toUpperCase(), //'BUY' or 'SELL'
             });
             clearInterval(orderTimer);
