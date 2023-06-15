@@ -16,7 +16,7 @@ const initialCurrentOrder = {
     executionReportSL: false,
 };
 
-global.stopLoss = 0.3; // this is for JPYUSD only, and is what I am currently working on
+global.stopLoss = 0.003; // this is for GBP only, and is what I am currently working on
 global.baseVolumne = 2000;
 
 global.lastOrderWin = true; // default to true so it starts with base volumne
