@@ -18,7 +18,7 @@ const initialCurrentOrder = {
 
 global.stopLoss = 0.003; // this is for GBP only, and is what I am currently working on
 global.baseVolumne = 1000;
-global.maxVolumne = baseVolumne * 15;
+global.maxVolumne = baseVolumne * 14;
 
 global.lastOrderWin = true; // default to true so it starts with base volumne
 global.lastOrderVolume = baseVolumne;
@@ -102,43 +102,50 @@ app.post('/trade', (req, res) => {
         client.orderCancelRequest(reportObj.ClOrdID)
     }
 
-    // place new order ============================================================
-    var orderTimer = setInterval(() => {
-        console.log(`[${now()}] Order: Waiting to create =======================`);
-        if (currentOrder.orderStatus === 'NONE') {
-            let orderVolume = lastOrderWin ? baseVolumne : lastOrderVolume * 2;
-            if (orderVolume > maxVolumne) { orderVolume = maxVolumne; }
-            client.sendNewOrder({
-                label: 'Order',
-                securityObj: {
-                    symbol: PAIR_TO_SYMBOL_MAP[pair.toUpperCase()],
-                    fixSymbolID: PAIR_TO_SYMBOL_MAP[pair.toUpperCase()],
-                },
-                orderQty: orderVolume,
-                direction: direction.toUpperCase(), //'BUY' or 'SELL'
-            });
-            clearInterval(orderTimer);
-        }
-    }, 1000)
+    let time = new Date();
+    let hour = time.getHours()
+    if (hour <= 3 && hour >= 17) {
+        // place new order ============================================================
+        var orderTimer = setInterval(() => {
+            console.log(`[${now()}] Order: Waiting to create =======================`);
+            if (currentOrder.orderStatus === 'NONE') {
+                let orderVolume = lastOrderWin ? baseVolumne : lastOrderVolume * 2;
+                if (orderVolume > maxVolumne) { orderVolume = maxVolumne; }
+                client.sendNewOrder({
+                    label: 'Order',
+                    securityObj: {
+                        symbol: PAIR_TO_SYMBOL_MAP[pair.toUpperCase()],
+                        fixSymbolID: PAIR_TO_SYMBOL_MAP[pair.toUpperCase()],
+                    },
+                    orderQty: orderVolume,
+                    direction: direction.toUpperCase(), //'BUY' or 'SELL'
+                });
+                clearInterval(orderTimer);
+            }
+        }, 1000)
 
 
-    // add SL to new order ==============================================
-    var sltimer = setInterval(() => {
-        console.log(`[${now()}] SL: Waiting to create ======================`);
-        if (currentOrder.orderStatus === 'ORDER_PLACED') {
-            clearInterval(sltimer);
-            client.sendStopOrder({
-                label: 'SL',
-                securityObj: {
-                    symbol: PAIR_TO_SYMBOL_MAP[pair.toUpperCase()],
-                    fixSymbolID: PAIR_TO_SYMBOL_MAP[pair.toUpperCase()],
-                },
-                executionReport: currentOrder.executionReport,
-                currentFIXPosition: undefined,
-                stopPx: getStopLossPrice(currentOrder.price, currentOrder.direction),
-            });
-        }
-    }, 1000);
+        // add SL to new order ==============================================
+        var sltimer = setInterval(() => {
+            console.log(`[${now()}] SL: Waiting to create ======================`);
+            if (currentOrder.orderStatus === 'ORDER_PLACED') {
+                clearInterval(sltimer);
+                client.sendStopOrder({
+                    label: 'SL',
+                    securityObj: {
+                        symbol: PAIR_TO_SYMBOL_MAP[pair.toUpperCase()],
+                        fixSymbolID: PAIR_TO_SYMBOL_MAP[pair.toUpperCase()],
+                    },
+                    executionReport: currentOrder.executionReport,
+                    currentFIXPosition: undefined,
+                    stopPx: getStopLossPrice(currentOrder.price, currentOrder.direction),
+                });
+            }
+        }, 1000);
+    } else {
+        console.log(`[${now()}]current hour is ${hour}, it is not in the trading hour from 17-03`);
+    }
+
     res.sendStatus(404);
 })
 
@@ -149,4 +156,3 @@ app.listen(appPort, () => {
 // version 1.1
 // logging cloudwatch to mobile phone
 // add close all options
-// add time range to trade. like from 3am-15am dont trade, and of it is in this range ,close all order, maybe only trade london and newyork time

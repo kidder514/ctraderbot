@@ -193,11 +193,11 @@ const didYouWin = (_closingOrder, closingReport) => {
 }
 
 const now = () => {
-    return '';
+    // return '';
     // pm2 has a option to output log time so we dont need this any more.
 
-    // const date = new Date();
-    // return `[${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}]${date.getHours()}=${date.getMinutes()}=${date.getSeconds()}_${date.getMilliseconds()}`
+    const date = new Date();
+    return `[${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}]${date.getHours()}=${date.getMinutes()}=${date.getSeconds()}_${date.getMilliseconds()}`
 }
 
 module.exports = { PAIR_TO_SYMBOL_MAP, SYMBOL_TO_PAIR_MAP, getStopLossPrice, fixStringToDescriptive, fixStringToObj, didYouWin, now };
