@@ -104,7 +104,7 @@ app.post('/trade', (req, res) => {
 
     let time = new Date();
     let hour = time.getHours()
-    if (hour <= 3 && hour >= 17) {
+    if (hour <= 3 || hour >= 17) {
         // place new order ============================================================
         var orderTimer = setInterval(() => {
             console.log(`[${now()}] Order: Waiting to create =======================`);
