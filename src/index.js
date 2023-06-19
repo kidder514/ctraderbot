@@ -16,7 +16,7 @@ const initialCurrentOrder = {
     executionReportSL: false,
 };
 
-global.stopLoss = 0.003; // this is for GBP only, and is what I am currently working on
+global.stopLoss = 0.3; // this is for JPY only, and is what I am currently working on
 global.baseVolumne = 1000;
 global.maxVolumne = baseVolumne * 14;
 global.isLoggedIn = false;
