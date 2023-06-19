@@ -69,6 +69,12 @@ class FIXParserClientBase extends EventEmitter {
             console.log(`[${now()}] Received message: ${message.description} ===========================================`);
             console.log(fixStringToDescriptive(message.string));
             console.log(message.string);
+            isLoggedIn = false;
+        } else if (message.description === 'Logon') {
+            console.log(`[${now()}] Received message: ${message.description} ===========================================`);
+            console.log(fixStringToDescriptive(message.string));
+            console.log(message.string);
+            isLoggedIn = true;
         } else if (message.description === 'Reject') {
             console.log(`[${now()}] Received message: ${message.description} ===========================================`);
             console.log(fixStringToDescriptive(message.string));

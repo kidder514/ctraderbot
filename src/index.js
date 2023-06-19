@@ -19,6 +19,7 @@ const initialCurrentOrder = {
 global.stopLoss = 0.003; // this is for GBP only, and is what I am currently working on
 global.baseVolumne = 1000;
 global.maxVolumne = baseVolumne * 14;
+global.isLoggedIn = false;
 
 global.lastOrderWin = true; // default to true so it starts with base volumne
 global.lastOrderVolume = baseVolumne;
@@ -49,7 +50,16 @@ const client = new fixclient({
 client.connect();
 setTimeout(() => {
     client.sendLogon();
+
+    var logoutTimer = setInterval(() => {
+        if (isLoggedIn === false) {
+            client.sendLogon();
+            clearInterval(logoutTimer);
+        }
+    }, 10000)
 }, 5000)
+
+
 
 app.use(bodyParser.json());
 // used to check server status
