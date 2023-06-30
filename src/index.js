@@ -2,7 +2,7 @@ const fixclient = require('./fixclient');
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express()
-const { PAIR_TO_SYMBOL_MAP, getStopLossPrice, fixStringToObj, now } = require('./util/util');
+const { PAIR_TO_SYMBOL_MAP, getStopLossPrice, fixStringToObj, now, readVolumeFromJsonFile, writeVolumneToJsonFile } = require('./util/util');
 
 const appPort = 80;
 const initialCurrentOrder = {
@@ -21,31 +21,39 @@ global.baseVolumne = 1000;
 global.maxVolumne = baseVolumne * 14;
 global.isLoggedIn = false;
 
-global.lastOrderWin = true; // default to true so it starts with base volumne
+global.lastOrderWin = undefined; // default to true so it starts with base volumne
+
+
+
 global.lastOrderVolume = baseVolumne;
+readVolumeFromJsonFile().then(res => {
+    if (res) {
+        lastOrderVolume = res;
+    }
+})
 global.currentOrder = initialCurrentOrder;
 
 // demo
-// const client = new fixclient({
-//     fixVersion: 'FIX.4.4',
-//     host: 'h51.p.ctrader.com',
-//     port: '5202',
-//     sender: 'demo.icmarkets.8721133',
-//     target: 'cServer',
-//     accountID: '8721133',
-//     accountPassword: 'k3224379514'
-// }, 'TRADE');
-
-// Juno
 const client = new fixclient({
     fixVersion: 'FIX.4.4',
-    host: 'h22.p.ctrader.com',
+    host: 'h51.p.ctrader.com',
     port: '5202',
-    sender: 'live2.icmarkets.2223288',
+    sender: 'demo.icmarkets.8721133',
     target: 'cServer',
-    accountID: '2223288',
+    accountID: '8721133',
     accountPassword: 'k3224379514'
 }, 'TRADE');
+
+// Juno
+// const client = new fixclient({
+//     fixVersion: 'FIX.4.4',
+//     host: 'h22.p.ctrader.com',
+//     port: '5202',
+//     sender: 'live2.icmarkets.2223288',
+//     target: 'cServer',
+//     accountID: '2223288',
+//     accountPassword: 'k3224379514'
+// }, 'TRADE');
 
 client.connect();
 setTimeout(() => {
@@ -60,23 +68,24 @@ setTimeout(() => {
 }, 5000)
 
 
-
 app.use(bodyParser.json());
 // used to check server status
-app.get('/check', (req, res) => {
+app.get('/check', async (req, res) => {
     console.log(`[${now()}] @@@@@ CHECK restapi called ===================================`);
     console.log(req.protocol + '://' + req.get('host') + req.originalUrl);
 
     res.sendStatus(404);
 });
 
-app.get('/reset', (req, res) => {
+app.get('/reset', async (req, res) => {
     console.log(`[${now()}] @@@@@ RESET restapi called ===================================`);
     console.log(req.protocol + '://' + req.get('host') + req.originalUrl);
 
     currentOrder = initialCurrentOrder;
     lastOrderWin = undefined;
     lastOrderVolume = undefined;
+    await writeVolumneToJsonFile(baseVolumne);
+
     res.sendStatus(404);
 });
 
@@ -119,7 +128,14 @@ app.post('/trade', (req, res) => {
         var orderTimer = setInterval(() => {
             console.log(`[${now()}] Order: Waiting to create =======================`);
             if (currentOrder.orderStatus === 'NONE') {
-                let orderVolume = lastOrderWin ? baseVolumne : lastOrderVolume * 2;
+                let orderVolume;
+                if (lastOrderWin == undefined) {
+                    orderVolume = lastOrderVolume ? lastOrderVolume : baseVolumne;
+                } else if (lastOrderWin) {
+                    orderVolume = baseVolumne;
+                } else {
+                    orderVolume = lastOrderVolume * 2;
+                }
                 if (orderVolume > maxVolumne) { orderVolume = maxVolumne; }
                 client.sendNewOrder({
                     label: 'Order',

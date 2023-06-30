@@ -1,3 +1,5 @@
+const fsPromises = require('fs').promises;
+
 const PAIR_TO_SYMBOL_MAP = {
     'USDAUD': 5,
     'AUDUSD': 5,
@@ -200,4 +202,33 @@ const now = () => {
     return `[${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}]${date.getHours()}=${date.getMinutes()}=${date.getSeconds()}_${date.getMilliseconds()}`
 }
 
-module.exports = { PAIR_TO_SYMBOL_MAP, SYMBOL_TO_PAIR_MAP, getStopLossPrice, fixStringToDescriptive, fixStringToObj, didYouWin, now };
+async function readVolumeFromJsonFile() {
+    return fsPromises.readFile('lastVolume.json')
+        .then((data) => {
+            let json = JSON.parse(data);
+            console.log(`[${now()}] JSON FILE: Last volumneload: ${json.lastVolume}: ======================`);
+            return Promise.resolve(json.lastVolume);
+        })
+        .catch(err => {
+            console.log(`[${now()}] JSON FILE: Failed to Load File======================`);
+            console.log(err);
+        })
+}
+
+async function writeVolumneToJsonFile(value) {
+    let student = {
+        lastVolume: value
+    };
+
+    let data = JSON.stringify(student);
+    return fsPromises.writeFile('lastVolume.json', data, { flag: 'w' })
+        .then(res => {
+            console.log(`[${now()}] JSON FILE: write File done ======================`);
+        })
+        .catch(err => {
+            console.log(`[${now()}] JSON FILE: Failed to write File======================`);
+            console.log(err);
+        });
+}
+
+module.exports = { PAIR_TO_SYMBOL_MAP, SYMBOL_TO_PAIR_MAP, getStopLossPrice, fixStringToDescriptive, fixStringToObj, didYouWin, now, writeVolumneToJsonFile, readVolumeFromJsonFile };

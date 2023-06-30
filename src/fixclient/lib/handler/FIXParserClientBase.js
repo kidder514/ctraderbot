@@ -2,7 +2,7 @@ const { EventEmitter } = require('events')
 const Messages = require('../constants/ConstantsMessage')
 const Fields = require('../constants/ConstantsField')
 const Field = require('../fields/Field')
-const { fixStringToDescriptive, fixStringToObj, didYouWin, now } = require('../../../util/util');
+const { fixStringToDescriptive, fixStringToObj, didYouWin, now, writeVolumneToJsonFile } = require('../../../util/util');
 const initialCurrentOrder = { // if you need to update this, do it also on index.js file
     orderStatus: 'NONE', // NONE, ORDER_PLACED, ORDER_N_SL_PLACED, CLEARING_ORDER, 'CLOSING'
     orderId: undefined,
@@ -51,7 +51,7 @@ class FIXParserClientBase extends EventEmitter {
         this.heartBeatIntervalId = setInterval(sendHeartbeat, this.heartBeatInterval);
     }
 
-    processMessage(message) {
+    async processMessage(message) {
         if (message.messageType === Messages.SequenceReset) {
             const newSeqNo = (this.fixParser.getField(Fields.NewSeqNo) || {})
                 .value;
@@ -103,6 +103,8 @@ class FIXParserClientBase extends EventEmitter {
                         } else {
                             currentOrder.executionReport = false;
                         }
+                        await writeVolumneToJsonFile(lastOrderVolume);
+
                     }
                 }
             }
@@ -151,6 +153,7 @@ class FIXParserClientBase extends EventEmitter {
                     // SL Hit !!!!!
                     console.log(`[${now()}] SL: HIT!!!!! ===========================================`);
                     lastOrderVolume = currentOrder.volumne;
+                    await writeVolumneToJsonFile(lastOrderVolume);
                     currentOrder = initialCurrentOrder;
                     lastOrderWin = false;
                 }
