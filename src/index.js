@@ -34,26 +34,26 @@ readVolumeFromJsonFile().then(res => {
 global.currentOrder = initialCurrentOrder;
 
 // demo
-const client = new fixclient({
-    fixVersion: 'FIX.4.4',
-    host: 'h51.p.ctrader.com',
-    port: '5202',
-    sender: 'demo.icmarkets.8721133',
-    target: 'cServer',
-    accountID: '8721133',
-    accountPassword: 'k3224379514'
-}, 'TRADE');
-
-// Juno
 // const client = new fixclient({
 //     fixVersion: 'FIX.4.4',
-//     host: 'h22.p.ctrader.com',
+//     host: 'h51.p.ctrader.com',
 //     port: '5202',
-//     sender: 'live2.icmarkets.2223288',
+//     sender: 'demo.icmarkets.8721133',
 //     target: 'cServer',
-//     accountID: '2223288',
+//     accountID: '8721133',
 //     accountPassword: 'k3224379514'
 // }, 'TRADE');
+
+// Juno
+const client = new fixclient({
+    fixVersion: 'FIX.4.4',
+    host: 'h22.p.ctrader.com',
+    port: '5202',
+    sender: 'live2.icmarkets.2223288',
+    target: 'cServer',
+    accountID: '2223288',
+    accountPassword: 'k3224379514'
+}, 'TRADE');
 
 client.connect();
 setTimeout(() => {
