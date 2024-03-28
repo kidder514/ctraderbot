@@ -40,8 +40,8 @@ global.currentOrder = initialCurrentOrder;
 //     port: '5202',
 //     sender: 'demo.icmarkets.8721133',
 //     target: 'cServer',
-//     accountID: '8721133',
-//     accountPassword: 'k3224379514'
+//     accountID: '***',
+//     accountPassword: '***'
 // }, 'TRADE');
 
 // Juno
@@ -51,8 +51,8 @@ const client = new fixclient({
     port: '5202',
     sender: 'live2.icmarkets.2223288',
     target: 'cServer',
-    accountID: '2223288',
-    accountPassword: 'k3224379514'
+    accountID: '***',
+    accountPassword: '***'
 }, 'TRADE');
 
 client.connect();
